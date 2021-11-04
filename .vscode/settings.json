@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "stdio.h": "c",
+        "netlink.h": "c",
+        "genl.h": "c",
+        "family.h": "c",
+        "ctrl.h": "c"
+    }
+}
