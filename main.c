@@ -131,7 +131,7 @@ static int getWifiName_callback(struct nl_msg *msg, void *arg)
 
     if(tb_msg[NL80211_ATTR_IFINDEX])
     {
-        ((Wifi*)arg)->ifindex, nla_get_u32(tb_msg[NL80211_ATTR_IFINDEX]);
+        ((Wifi*)arg)->ifindex = nla_get_u32(tb_msg[NL80211_ATTR_IFINDEX]);
     }
 
     return NL_SKIP;
