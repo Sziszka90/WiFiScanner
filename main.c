@@ -17,11 +17,21 @@ void ctrl_c_handler(int dummy) {
     keepRunning = 0;
 }
 
+struct trigger_results {
+    int done;
+    int aborted;
+};
+
+struct handler_args 
+{
+    const char *group;
+    int id;
+};
 
 typedef struct {
     int id;
     struct nl_sock *socket;
-    struct nl_cb *cb1, *cb2;
+    struct nl_cb *cb1, *cb2, *cb3;
     int result1, result2;
 } Netlink;
 
@@ -30,6 +40,7 @@ typedef struct {
     int ifindex;
     int signal;
     int txrate;
+
 } Wifi;
 
 static struct nla_policy stats_policy[NL80211_STA_INFO_MAX + 1] = {
@@ -197,7 +208,7 @@ static int getWifiStatus(Netlink* nl, Wifi* w) {
     if (!msg1) 
     {
         fprintf(stderr, "Failed to allocate netlink message.\n");
-        return -2;
+        return -ENOMEM;
     }
   
     genlmsg_put(msg1,
@@ -228,7 +239,7 @@ static int getWifiStatus(Netlink* nl, Wifi* w) {
     if (!msg2) 
     {
         fprintf(stderr, "Failed to allocate netlink message.\n");
-        return -2;
+        return -ENOMEM;
     }
   
     genlmsg_put(msg2,
@@ -242,9 +253,242 @@ static int getWifiStatus(Netlink* nl, Wifi* w) {
               
     nla_put_u32(msg2, NL80211_ATTR_IFINDEX, w->ifindex); 
     nl_send_auto(nl->socket, msg2); 
-    while (nl->result2 > 0) { nl_recvmsgs(nl->socket, nl->cb2); }
+
+    while (nl->result2 > 0) 
+    {
+        nl_recvmsgs(nl->socket, nl->cb2); 
+    }
+
     nlmsg_free(msg2);
   
+    return 0;
+}
+
+static int ack_handler(struct nl_msg *msg, void *arg) {
+    // Callback for NL_CB_ACK.
+    int *ret = arg;
+    *ret = 0;
+    return NL_STOP;
+}
+
+static int family_handler(struct nl_msg *msg, void *arg) 
+{
+    struct handler_args *grp = arg;
+    struct nlattr *tb[CTRL_ATTR_MAX + 1];
+    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+    struct nlattr *mcgrp;
+    int rem_mcgrp;
+
+    nla_parse(tb,
+              CTRL_ATTR_MAX, 
+              genlmsg_attrdata(gnlh, 0), 
+              genlmsg_attrlen(gnlh, 0), 
+              NULL);
+
+    if (!tb[CTRL_ATTR_MCAST_GROUPS]) return NL_SKIP;
+
+    nla_for_each_nested(mcgrp, tb[CTRL_ATTR_MCAST_GROUPS], rem_mcgrp) 
+    { 
+        struct nlattr *tb_mcgrp[CTRL_ATTR_MCAST_GRP_MAX + 1];
+
+        nla_parse(tb_mcgrp,
+                  CTRL_ATTR_MCAST_GRP_MAX, 
+                  nla_data(mcgrp), 
+                  nla_len(mcgrp), 
+                  NULL);
+
+        if (!tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME] || !tb_mcgrp[CTRL_ATTR_MCAST_GRP_ID]) 
+        {
+            continue;
+        }
+
+        if (strncmp(nla_data(tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME]), grp->group,
+            nla_len(tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME]))) 
+        {
+            continue;
+        }
+
+        grp->id = nla_get_u32(tb_mcgrp[CTRL_ATTR_MCAST_GRP_ID]);
+        break;
+    }
+
+    return NL_SKIP;
+}
+
+
+int nl_get_multicast_id(struct nl_sock *sock, const char *family, const char *group) 
+{
+    struct nl_msg *msg;
+    struct nl_cb *cb;
+    int ret, ctrlid;
+    struct handler_args grp = { .group = group, .id = -ENOENT, };
+
+    msg = nlmsg_alloc();
+    if (!msg) return -ENOMEM;
+
+    cb = nl_cb_alloc(NL_CB_DEFAULT);
+    if (!cb) 
+    {
+        ret = -ENOMEM;
+        goto out_fail_cb;
+    }
+
+    ctrlid = genl_ctrl_resolve(sock, "nlctrl");
+
+    genlmsg_put(msg, 0, 0, ctrlid, 0, 0, CTRL_CMD_GETFAMILY, 0);
+
+    ret = -ENOBUFS;
+    nla_put_string(msg, CTRL_ATTR_FAMILY_NAME, family);
+
+    ret = nl_send_auto_complete(sock, msg);
+    if (ret < 0) goto out;
+
+    ret = 1;
+
+    nl_cb_set(cb, NL_CB_ACK, NL_CB_CUSTOM, ack_handler, &ret);
+    nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, family_handler, &grp);
+
+    while (ret > 0) nl_recvmsgs(sock, cb);
+
+    if (ret == 0) ret = grp.id;
+
+    nla_put_failure:
+        out:
+            nl_cb_put(cb);
+        out_fail_cb:
+            nlmsg_free(msg);
+            return ret;
+}
+
+
+static int Scan_callback(struct nl_msg* msg, void* arg) {
+
+    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+    struct trigger_results *results = arg;
+
+    if (gnlh->cmd == NL80211_CMD_SCAN_ABORTED) 
+    {
+        printf("Got NL80211_CMD_SCAN_ABORTED.\n");
+        results->done = 1;
+        results->aborted = 1;
+    } 
+    else if (gnlh->cmd == NL80211_CMD_NEW_SCAN_RESULTS) 
+    {
+        printf("Got NL80211_CMD_NEW_SCAN_RESULTS.\n");
+        results->done = 1;
+        results->aborted = 0;
+    }  
+
+    return NL_SKIP;
+}
+
+static int error_handler(struct sockaddr_nl *nla, struct nlmsgerr *err, void *arg)
+{
+    printf("error_handler() called.\n");
+    int *ret = arg;
+    *ret = err->error;
+    return NL_STOP;
+}
+
+static int no_seq_check(struct nl_msg *msg, void *arg) {
+    return NL_OK;
+}
+
+int do_scan_trigger(Netlink* nl, Wifi* w)
+{
+    struct trigger_results results = { .done=0, .aborted=0 };
+    struct nl_msg* msg;
+    struct nl_msg* ssids_to_scan;
+    int err;
+    int ret;
+    int mcid = nl_get_multicast_id(nl->socket, "nl80211", "scan");
+    nl_socket_add_memberships(nl->socket, mcid);
+
+    msg = nlmsg_alloc();
+
+    if (!msg) 
+    {
+        fprintf(stderr, "Failed to allocate netlink message.\n");
+        return -ENOMEM;
+    }
+
+    ssids_to_scan = nlmsg_alloc();
+
+    if (!ssids_to_scan) 
+    {
+        fprintf(stderr, "Failed to allocate netlink message.\n");
+        nlmsg_free(msg);
+        return -ENOMEM;
+    }
+
+    nl->cb3 = nl_cb_alloc(NL_CB_DEFAULT);
+    if(!nl->cb3)
+    {
+        fprintf(stderr, "Failed to allocate netlink callbacks.\n");
+        nlmsg_free(msg);
+        nlmsg_free(ssids_to_scan);
+        return -ENOMEM;
+    }
+
+    genlmsg_put(msg,
+                NL_AUTO_PORT,
+                NL_AUTO_SEQ,
+                nl->id,
+                0,
+                0,
+                NL80211_CMD_TRIGGER_SCAN,
+                0);
+    nla_put_u32(msg, NL80211_ATTR_IFINDEX, w->ifindex); 
+    nla_put(ssids_to_scan, 1, 0, "");
+    nla_put_nested(msg, NL80211_ATTR_SCAN_SSIDS, ssids_to_scan);
+    nlmsg_free(ssids_to_scan);
+
+    nl_cb_set(nl->cb3, NL_CB_VALID, NL_CB_CUSTOM, Scan_callback, &results);
+    nl_cb_err(nl->cb3, NL_CB_CUSTOM, error_handler, &err); 
+    nl_cb_set(nl->cb3, NL_CB_FINISH, NL_CB_CUSTOM, finish_handler, &err);
+    nl_cb_set(nl->cb3, NL_CB_ACK, NL_CB_CUSTOM, ack_handler, &err);
+    nl_cb_set(nl->cb3, NL_CB_SEQ_CHECK, NL_CB_CUSTOM, no_seq_check, NULL);
+
+    err = 1;
+    ret = nl_send_auto(nl->socket, msg);
+    
+    printf("NL802111_CMD_TRIGGER_SCAN sent %d bytes to the kernel.\n", ret);
+    
+    printf("Waiting for scan to complete...\n");
+
+    while (err > 0)
+    {
+        ret = nl_recvmsgs(nl->socket, nl->cb3);
+    }
+
+    if (err < 0) 
+    {
+        printf("WARNING: err has a value of %d.\n", err);
+    }
+
+    if (ret < 0) 
+    {
+        printf("ERROR: nl_recvmsgs() returned %d (%s).\n", ret, nl_geterror(-ret));
+        return ret;
+    }
+
+    while (!results.done) 
+    {
+        nl_recvmsgs(nl->socket, nl->cb3);
+    }
+
+    if (results.aborted) 
+    {
+        printf("ERROR: Kernel aborted scan.\n");
+        return 1;
+    }
+
+    printf("Scan is done.\n");
+
+    nlmsg_free(msg);
+    nl_cb_put(nl->cb3);
+    nl_socket_drop_membership(nl->socket, mcid);
+
     return 0;
 }
 
@@ -260,12 +504,20 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Error initializing netlink 802.11\n");
         return -1;
     }
+
+    getWifiStatus(&nl, &w);
+
+    int err = do_scan_trigger(&nl, &w);
+    if (err != 0) {
+        printf("do_scan_trigger() failed with %d.\n", err);
+        return err;
+    }
   
     do 
     {
         getWifiStatus(&nl, &w);  
-        printf("Interface: %s | signal: %d dB | txrate: %.1f MBit/s\n",
-           w.ifname, w.signal, (float)w.txrate/10);
+        printf("Interface: %s | InterfaceIdx: %d signal: %d dB | txrate: %.1f MBit/s\n",
+           w.ifname, w.ifindex, w.signal, (float)w.txrate/10);
         sleep(5);
     } 
     while(keepRunning);
