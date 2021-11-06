@@ -4,6 +4,9 @@
         "netlink.h": "c",
         "genl.h": "c",
         "family.h": "c",
-        "ctrl.h": "c"
+        "ctrl.h": "c",
+        "callback.h": "c",
+        "cctype": "c",
+        "nl80211.h": "c"
     }
 }
