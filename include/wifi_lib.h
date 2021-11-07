@@ -1,7 +1,31 @@
-#ifndef __UTILS_H__
-#define __UTILS_H__
+#ifndef __WIFI_LIB_H__
+#define __WIFI_LIB_H__
 
-extern int keepRunning;
+struct trigger_results {
+    int done;
+    int aborted;
+};
+
+struct handler_args 
+{
+    const char *group;
+    int id;
+};
+
+typedef struct {
+    int id;
+    struct nl_sock *socket;
+    struct nl_cb *cb1, *cb2, *cb3;
+    int result1, result2;
+} Netlink;
+
+typedef struct {
+    char ifname[30];
+    int ifindex;
+    int signal;
+    int txrate;
+
+} Wifi;
 
 int init_nl80211(Netlink *nl, Wifi *w);
 
@@ -13,15 +37,11 @@ void print_ssid(unsigned char *ie, int ielen);
 
 int do_scan_trigger(Netlink* nl, Wifi* w);
 
-
-
 int finish_callback(struct nl_msg *msg, void *arg);
 
 int get_wifi_name_callback(struct nl_msg *msg, void *arg);
 
 int get_wifi_info_callback(struct nl_msg *msg, void *arg);
-
-void ctrl_c_callback();
 
 int ack_callback(struct nl_msg *msg, void *arg);
 
@@ -34,5 +54,7 @@ int no_seq_check_callback(struct nl_msg *msg, void *arg);
 int dump_callback(struct nl_msg* msg, void* arg);
 
 int scan_callback(struct nl_msg* msg, void* arg);
+
+void delete_netlink(Netlink* nl);
 
 #endif

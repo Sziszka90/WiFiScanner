@@ -9,10 +9,14 @@
 #include <netlink/genl/family.h>
 #include <netlink/genl/ctrl.h>
 #include <linux/nl80211.h>
-#include "structs.h"
-#include "utils.h"
+#include "wifi_lib.h"
 
-keepRunning = 1;
+int keepRunning = 1;
+
+void ctrl_c_callback(int dummy) 
+{
+    keepRunning = 0;
+}
 
 int main(int argc, char **argv) 
 {
@@ -46,10 +50,7 @@ int main(int argc, char **argv)
     while(keepRunning);
 
     printf("\nExiting gracefully... ");
-    nl_cb_put(nl.cb1);
-    nl_cb_put(nl.cb2);
-    nl_close(nl.socket);
-    nl_socket_free(nl.socket);
+    delete_netlink(&nl);
     printf("OK\n");
     return 0;
 }

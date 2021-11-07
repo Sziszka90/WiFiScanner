@@ -4,58 +4,70 @@
 #include <netlink/genl/family.h>
 #include <netlink/genl/ctrl.h>
 #include <linux/nl80211.h>
-#include "structs.h"
-#include "utils.h"
+#include <ctype.h>
+#include "wifi_lib.h"
 
-struct nla_policy stats_policy[NL80211_STA_INFO_MAX + 1] = {
-                              [NL80211_STA_INFO_INACTIVE_TIME] = { .type = NLA_U32 },
-                              [NL80211_STA_INFO_RX_BYTES] = { .type = NLA_U32 },
-                              [NL80211_STA_INFO_TX_BYTES] = { .type = NLA_U32 },
-                              [NL80211_STA_INFO_RX_PACKETS] = { .type = NLA_U32 },
-                              [NL80211_STA_INFO_TX_PACKETS] = { .type = NLA_U32 },
-                              [NL80211_STA_INFO_SIGNAL] = { .type = NLA_U8 },
-                              [NL80211_STA_INFO_TX_BITRATE] = { .type = NLA_NESTED },
-                              [NL80211_STA_INFO_LLID] = { .type = NLA_U16 },
-                              [NL80211_STA_INFO_PLID] = { .type = NLA_U16 },
-                              [NL80211_STA_INFO_PLINK_STATE] = { .type = NLA_U8 },
-};
-
-struct nla_policy bss_policy[NL80211_BSS_MAX + 1] = {
-                            [NL80211_BSS_TSF] = { .type = NLA_U64 },
-                            [NL80211_BSS_FREQUENCY] = { .type = NLA_U32 },
-                            [NL80211_BSS_BSSID] = { },
-                            [NL80211_BSS_BEACON_INTERVAL] = { .type = NLA_U16 },
-                            [NL80211_BSS_CAPABILITY] = { .type = NLA_U16 },
-                            [NL80211_BSS_INFORMATION_ELEMENTS] = {.type = NLA_NESTED },
-                            [NL80211_BSS_SIGNAL_MBM] = { .type = NLA_U32 },
-                            [NL80211_BSS_SIGNAL_UNSPEC] = { .type = NLA_U8 },
-                            [NL80211_BSS_STATUS] = { .type = NLA_U32 },
-                            [NL80211_BSS_SEEN_MS_AGO] = { .type = NLA_U32 },
-                            [NL80211_BSS_BEACON_IES] = { },
-};
-
-struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = {
-                             [NL80211_RATE_INFO_BITRATE] = { .type = NLA_U16 },
-                             [NL80211_RATE_INFO_MCS] = { .type = NLA_U8 },
-                             [NL80211_RATE_INFO_40_MHZ_WIDTH] = { .type = NLA_FLAG },
-                             [NL80211_RATE_INFO_SHORT_GI] = { .type = NLA_FLAG },
-};
-
-void ctrl_c_callback() 
+struct nla_policy stats_policy[NL80211_STA_INFO_MAX + 1] = 
 {
-    keepRunning = 0;
+    {},
+    {NLA_U32},
+    {NLA_U32},
+    {NLA_U32},
+    {NLA_U16},
+    {NLA_U16},
+    {NLA_U8},
+    {NLA_U8},
+    {NLA_NESTED},
+    {NLA_U32},
+    {NLA_U32}
+
+};
+
+struct nla_policy bss_policy[NL80211_BSS_MAX + 1] = 
+{
+    {},
+    {},
+    {NLA_U32},
+    {NLA_U64},
+    {NLA_U16},
+    {NLA_U16},
+    {NLA_NESTED},
+    {NLA_U32},
+    {NLA_U8},
+    {NLA_U32},
+    {NLA_U32},
+    {}
+};
+
+struct nla_policy rate_policy[NL80211_RATE_INFO_MAX + 1] = 
+{
+    {},
+    {NLA_U16},
+    {NLA_U8},
+    {NLA_FLAG},
+    {NLA_FLAG}  
+};
+
+
+void delete_netlink( Netlink* nl)
+{
+    nl_cb_put(nl->cb1);
+    nl_cb_put(nl->cb2);
+    nl_cb_put(nl->cb3);
+    nl_close(nl->socket);
+    nl_socket_free(nl->socket);
 }
 
 int finish_callback(struct nl_msg *msg, void *arg)
 {
-    int *ret = arg;
+    int *ret = (int*)arg;
     *ret = 0;
     return NL_SKIP;
 }
 
 int get_wifi_name_callback(struct nl_msg *msg, void *arg)
 {
-    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+    struct genlmsghdr *gnlh = (struct genlmsghdr*)nlmsg_data(nlmsg_hdr(msg));
     struct nlattr *tb_msg[NL80211_ATTR_MAX + 1];
 
     nla_parse(tb_msg,
@@ -79,7 +91,7 @@ int get_wifi_name_callback(struct nl_msg *msg, void *arg)
 
 int get_wifi_info_callback(struct nl_msg *msg, void *arg)
 {
-    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+    struct genlmsghdr *gnlh = (struct genlmsghdr*)nlmsg_data(nlmsg_hdr(msg));
     struct nlattr *tb[NL80211_ATTR_MAX + 1];
     struct nlattr *sinfo[NL80211_STA_INFO_MAX + 1];
     struct nlattr *rinfo[NL80211_RATE_INFO_MAX + 1];
@@ -131,17 +143,17 @@ int get_wifi_info_callback(struct nl_msg *msg, void *arg)
 
 int ack_callback(struct nl_msg *msg, void *arg) 
 {
-    int *ret = arg;
+    int *ret = (int*)arg;
     *ret = 0;
     return NL_STOP;
 }
 
 int family_callback(struct nl_msg *msg, void *arg) 
 {
-    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+    struct genlmsghdr *gnlh = (struct genlmsghdr*)nlmsg_data(nlmsg_hdr(msg));
     struct nlattr *tb[CTRL_ATTR_MAX + 1]; 
     struct nlattr *mcgrp;
-    struct handler_args *grp = arg;
+    struct handler_args *grp = (struct handler_args*)arg;
     
     int rem_mcgrp;
 
@@ -159,7 +171,7 @@ int family_callback(struct nl_msg *msg, void *arg)
 
         nla_parse(tb_mcgrp,
                   CTRL_ATTR_MCAST_GRP_MAX, 
-                  nla_data(mcgrp), 
+                  (struct nlattr *)nla_data(mcgrp), 
                   nla_len(mcgrp), 
                   NULL);
 
@@ -168,7 +180,7 @@ int family_callback(struct nl_msg *msg, void *arg)
             continue;
         }
 
-        if (strncmp(nla_data(tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME]), grp->group,
+        if (strncmp((char *)nla_data(tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME]), grp->group,
             nla_len(tb_mcgrp[CTRL_ATTR_MCAST_GRP_NAME]))) 
         {
             continue;
@@ -184,7 +196,7 @@ int family_callback(struct nl_msg *msg, void *arg)
 int error_callback(struct sockaddr_nl *nla, struct nlmsgerr *err, void *arg)
 {
     printf("error_handler() called.\n");
-    int *ret = arg;
+    int *ret = (int*)arg;
     *ret = err->error;
     return NL_STOP;
 }
@@ -197,7 +209,7 @@ int no_seq_check_callback(struct nl_msg *msg, void *arg)
 int dump_callback(struct nl_msg* msg, void* arg)
 {
     struct nlattr *bss[NL80211_BSS_MAX + 1];
-    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+    struct genlmsghdr *gnlh = (struct genlmsghdr*)nlmsg_data(nlmsg_hdr(msg));
     char mac_addr[20];
     struct nlattr *tb[NL80211_ATTR_MAX + 1];
 
@@ -225,11 +237,11 @@ int dump_callback(struct nl_msg* msg, void* arg)
         return NL_SKIP;
     }
 
-    mac_addr_n2a(mac_addr, nla_data(bss[NL80211_BSS_BSSID]));
+    mac_addr_n2a(mac_addr, (unsigned char*)nla_data(bss[NL80211_BSS_BSSID]));
     printf("%s, ", mac_addr);
     printf("%d MHz, ", nla_get_u32(bss[NL80211_BSS_FREQUENCY]));
     printf("-%d dBm, ", 100+(int)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100);
-    print_ssid(nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]));
+    print_ssid((unsigned char*)nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]));
     printf("\n");
 
     return NL_SKIP;
@@ -238,8 +250,8 @@ int dump_callback(struct nl_msg* msg, void* arg)
 int scan_callback(struct nl_msg* msg, void* arg) 
 {
 
-    struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
-    struct trigger_results *results = arg;
+    struct genlmsghdr *gnlh = (struct genlmsghdr*)nlmsg_data(nlmsg_hdr(msg));
+    struct trigger_results *results = (struct trigger_results*)arg;
 
     if (gnlh->cmd == NL80211_CMD_SCAN_ABORTED) 
     {
