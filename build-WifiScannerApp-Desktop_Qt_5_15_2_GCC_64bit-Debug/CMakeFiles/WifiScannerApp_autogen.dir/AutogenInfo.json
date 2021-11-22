@@ -1,0 +1,177 @@
+{
+	"BUILD_DIR" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/WifiScannerApp_autogen",
+	"CMAKE_BINARY_DIR" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp",
+	"CMAKE_EXECUTABLE" : "/home/sziszka90/Qt/Tools/CMake/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp/CMakeLists.txt",
+		"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/3.19.2/CMakeSystem.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeSystemSpecificInitialize.cmake",
+		"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/3.19.2/CMakeCXXCompiler.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeSystemSpecificInformation.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeGenericSystem.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeInitializeConfigs.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/Platform/Linux.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/Platform/UnixPaths.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeCXXInformation.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeLanguageInformation.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/Compiler/GNU-CXX.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/Compiler/GNU.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/Compiler/CMakeCommonCompilerMacros.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/Platform/Linux-GNU-CXX.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/Platform/Linux-GNU.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeCommonLanguageInclude.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ConfigVersion.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5Config.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ConfigVersion.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5Config.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5/Qt5ModuleLocation.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Widgets/Qt5WidgetsConfigVersion.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Widgets/Qt5WidgetsConfig.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5GuiConfigVersion.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5GuiConfig.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigVersion.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfig.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Core/Qt5CoreMacros.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeParseArguments.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QComposePlatformInputContextPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QEglFSEmulatorIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QEglFSIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QEglFSKmsEglDeviceIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QEglFSX11IntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QEvdevKeyboardPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QEvdevMousePlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QEvdevTabletPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QEvdevTouchScreenPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QGifPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QGtk3ThemePlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QICNSPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QICOPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QIbusPlatformInputContextPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QJpegPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QLinuxFbIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QMinimalEglIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QMinimalIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QOffscreenIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QSvgIconPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QSvgPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QTgaPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QTiffPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QTuioTouchPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QVncIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QWaylandEglPlatformIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QWaylandIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QWaylandXCompositeEglPlatformIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QWaylandXCompositeGlxPlatformIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QWbmpPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QWebpPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QXcbEglIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QXcbGlxIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QXcbIntegrationPlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5Gui_QXdgDesktopPortalThemePlugin.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Widgets/Qt5WidgetsConfigExtras.cmake",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/lib/cmake/Qt5Widgets/Qt5WidgetsMacros.cmake",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeParseArguments.cmake"
+	],
+	"CMAKE_SOURCE_DIR" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp",
+	"DEP_FILE" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/WifiScannerApp_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "WifiScannerApp_autogen/timestamp",
+	"HEADERS" : 
+	[
+		[
+			"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp/mainwindow.h",
+			"MU",
+			"EWIEGA46WW/moc_mainwindow.cpp"
+		],
+		[
+			"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp/wifiScanner.h",
+			"MU",
+			"EWIEGA46WW/moc_wifiScanner.cpp"
+		],
+		[
+			"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp/wifi_lib.h",
+			"MU",
+			"EWIEGA46WW/moc_wifi_lib.cpp"
+		]
+	],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/WifiScannerApp_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/WifiScannerApp_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : [ "QT_CORE_LIB", "QT_GUI_LIB", "QT_WIDGETS_LIB" ],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug",
+		"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp",
+		"/usr/include/libnl3",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/include",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/include/QtWidgets",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/include/QtGui",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/include/QtCore",
+		"/home/sziszka90/Qt/5.15.2/gcc_64/mkspecs/linux-g++",
+		"/usr/include",
+		"/usr/include/c++/9",
+		"/usr/include/x86_64-linux-gnu/c++/9",
+		"/usr/include/c++/9/backward",
+		"/usr/lib/gcc/x86_64-linux-gnu/9/include",
+		"/usr/local/include",
+		"/usr/include/x86_64-linux-gnu"
+	],
+	"MOC_MACRO_NAMES" : [ "Q_OBJECT", "Q_GADGET", "Q_NAMESPACE", "Q_NAMESPACE_EXPORT" ],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/usr/bin/g++",
+		"-dM",
+		"-E",
+		"-c",
+		"/home/sziszka90/Qt/Tools/CMake/share/cmake-3.19/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/WifiScannerApp_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : [],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 2,
+	"PARSE_CACHE_FILE" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/WifiScannerApp_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/home/sziszka90/Qt/5.15.2/gcc_64/bin/moc",
+	"QT_UIC_EXECUTABLE" : "/home/sziszka90/Qt/5.15.2/gcc_64/bin/uic",
+	"QT_VERSION_MAJOR" : 5,
+	"QT_VERSION_MINOR" : 15,
+	"SETTINGS_FILE" : "/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/WifiScannerApp_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[
+			"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp/main.cpp",
+			"MU"
+		],
+		[
+			"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp/mainwindow.cpp",
+			"MU"
+		],
+		[
+			"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp/wifiScanner.cpp",
+			"MU"
+		],
+		[
+			"/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/WifiScannerApp/wifi_lib.cpp",
+			"MU"
+		]
+	],
+	"UIC_OPTIONS" : [],
+	"UIC_SEARCH_PATHS" : [],
+	"UIC_SKIP" : [],
+	"UIC_UI_FILES" : [],
+	"VERBOSITY" : 0
+}

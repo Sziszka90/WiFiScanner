@@ -148,7 +148,7 @@ int ack_callback(struct nl_msg *msg, void *arg)
     return NL_STOP;
 }
 
-int family_callback(struct nl_msg *msg, void *arg) 
+int family_callback(struct nl_msg *msg, void *arg)  // Get ID
 {
     struct genlmsghdr *gnlh = (struct genlmsghdr*)nlmsg_data(nlmsg_hdr(msg));
     struct nlattr *tb[CTRL_ATTR_MAX + 1]; 
@@ -161,7 +161,7 @@ int family_callback(struct nl_msg *msg, void *arg)
               CTRL_ATTR_MAX, 
               genlmsg_attrdata(gnlh, 0), 
               genlmsg_attrlen(gnlh, 0), 
-              NULL);
+              NULL); // Create attribute index based on a stream of attributes.
 
     if (!tb[CTRL_ATTR_MCAST_GROUPS]) return NL_SKIP;
 
@@ -186,7 +186,7 @@ int family_callback(struct nl_msg *msg, void *arg)
             continue;
         }
 
-        grp->id = nla_get_u32(tb_mcgrp[CTRL_ATTR_MCAST_GRP_ID]);
+        grp->id = nla_get_u32(tb_mcgrp[CTRL_ATTR_MCAST_GRP_ID]); // return payload ( actual message )
         break;
     }
 
@@ -430,24 +430,24 @@ int nl_get_multicast_id(struct nl_sock *sock, const char *family, const char *gr
     int ret, ctrlid;
     struct handler_args grp = { .group = group, .id = -ENOENT, };
 
-    msg = nlmsg_alloc();
+    msg = nlmsg_alloc(); // allocate message
     if (!msg) return -ENOMEM;
 
-    cb = nl_cb_alloc(NL_CB_DEFAULT);
+    cb = nl_cb_alloc(NL_CB_DEFAULT); // allocate callback
     if (!cb) 
     {
         ret = -ENOMEM;
         goto out_fail_cb;
     }
 
-    ctrlid = genl_ctrl_resolve(sock, "nlctrl");
+    ctrlid = genl_ctrl_resolve(sock, "nlctrl"); // resolve family name to ID
 
-    genlmsg_put(msg, 0, 0, ctrlid, 0, 0, CTRL_CMD_GETFAMILY, 0);
+    genlmsg_put(msg, 0, 0, ctrlid, 0, 0, CTRL_CMD_GETFAMILY, 0); // add header to msg
 
     ret = -ENOBUFS;
-    nla_put_string(msg, CTRL_ATTR_FAMILY_NAME, family);
+    nla_put_string(msg, CTRL_ATTR_FAMILY_NAME, family); // add string attribute
 
-    ret = nl_send_auto_complete(sock, msg);
+    ret = nl_send_auto_complete(sock, msg); // send msg
     if (ret < 0) goto out;
 
     ret = 1;
@@ -455,7 +455,7 @@ int nl_get_multicast_id(struct nl_sock *sock, const char *family, const char *gr
     nl_cb_set(cb, NL_CB_ACK, NL_CB_CUSTOM, ack_callback, &ret);
     nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, family_callback, &grp);
 
-    while (ret > 0) nl_recvmsgs(sock, cb);
+    while (ret > 0) nl_recvmsgs(sock, cb); // Receive message from socket, it calls a callback function
 
     if (ret == 0) ret = grp.id;
 
@@ -474,8 +474,8 @@ int do_scan_trigger(Netlink* nl, Wifi* w)
     struct nl_msg* ssids_to_scan;
     int err;
     int ret;
-    int mcid = nl_get_multicast_id(nl->socket, "nl80211", "scan");
-    nl_socket_add_memberships(nl->socket, mcid);
+    int mcid = nl_get_multicast_id(nl->socket, "nl80211", "scan"); // return ID
+    nl_socket_add_memberships(nl->socket, mcid); // Add membership to socket. netlink_family selects the kernel module or netlink group to communicate with.
 
     msg = nlmsg_alloc();
 
@@ -511,12 +511,12 @@ int do_scan_trigger(Netlink* nl, Wifi* w)
                 0,
                 NL80211_CMD_TRIGGER_SCAN,
                 0);
-    nla_put_u32(msg, NL80211_ATTR_IFINDEX, w->ifindex); 
-    nla_put(ssids_to_scan, 1, 0, "");
+    nla_put_u32(msg, NL80211_ATTR_IFINDEX, w->ifindex); // Add attribute to message
+    nla_put(ssids_to_scan, 1, 0, ""); 
     nla_put_nested(msg, NL80211_ATTR_SCAN_SSIDS, ssids_to_scan);
     nlmsg_free(ssids_to_scan);
 
-    nl_cb_set(nl->cb3, NL_CB_VALID, NL_CB_CUSTOM, scan_callback, &results);
+    nl_cb_set(nl->cb3, NL_CB_VALID, NL_CB_CUSTOM, scan_callback, &results); // Print scan results. 
     nl_cb_err(nl->cb3, NL_CB_CUSTOM, error_callback, &err); 
     nl_cb_set(nl->cb3, NL_CB_FINISH, NL_CB_CUSTOM, finish_callback, &err);
     nl_cb_set(nl->cb3, NL_CB_ACK, NL_CB_CUSTOM, ack_callback, &err);
@@ -558,15 +558,15 @@ int do_scan_trigger(Netlink* nl, Wifi* w)
 
     printf("Scan is done.\n");
 
-    genlmsg_put(msg, 0, 0, nl->id, 0, NLM_F_DUMP, NL80211_CMD_GET_SCAN, 0); 
-    nla_put_u32(msg, NL80211_ATTR_IFINDEX, w->ifindex); 
+    genlmsg_put(msg, 0, 0, nl->id, 0, NLM_F_DUMP, NL80211_CMD_GET_SCAN, 0);  // Add header
+    nla_put_u32(msg, NL80211_ATTR_IFINDEX, w->ifindex); // Add attribute to message -> it can be delete maybe
     nl_socket_modify_cb(nl->socket, NL_CB_VALID, NL_CB_CUSTOM, dump_callback, NULL);
 
-    ret = nl_send_auto(nl->socket, msg);  
+    ret = nl_send_auto(nl->socket, msg);  // Send message
 
     printf("NL80211_CMD_GET_SCAN sent %d bytes to the kernel.\n", ret);
 
-    ret = nl_recvmsgs_default(nl->socket); 
+    ret = nl_recvmsgs_default(nl->socket); // Receive message
 
     if (ret < 0) {
         printf("ERROR: nl_recvmsgs_default() returned %d (%s).\n", ret, nl_geterror(-ret));
