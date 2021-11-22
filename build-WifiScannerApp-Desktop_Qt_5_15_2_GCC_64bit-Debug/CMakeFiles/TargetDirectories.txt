@@ -1,5 +1,0 @@
-/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/rebuild_cache.dir
-/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/edit_cache.dir
-/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/WifiScannerApp.dir
-/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/WifiScannerApp_autogen_timestamp_deps.dir
-/home/sziszka90/Dokumentumok/Programs/C++/WiFiScanner/build-WifiScannerApp-Desktop_Qt_5_15_2_GCC_64bit-Debug/CMakeFiles/WifiScannerApp_autogen.dir
