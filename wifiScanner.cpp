@@ -11,10 +11,11 @@
 #include <linux/nl80211.h>
 #include "wifi_lib.h"
 #include "wifiScanner.h"
+#include <vector>
 
-int WifiScanner::doScanTrigger(Netlink* nl, Wifi* w)
+int WifiScanner::doScanTrigger(Netlink* nl, Wifi* w, std::vector<Signals>* sig)
 {
-    return do_scan_trigger(nl, w);
+    return do_scan_trigger(nl, w, sig);
 }
 
 

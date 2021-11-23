@@ -6,6 +6,11 @@
 #include <linux/nl80211.h>
 #include <ctype.h>
 #include "wifi_lib.h"
+#include <iostream>
+#include <vector>
+#include <string>
+
+using namespace std;
 
 struct nla_policy stats_policy[NL80211_STA_INFO_MAX + 1] = 
 {
@@ -53,7 +58,7 @@ void delete_netlink( Netlink* nl)
 {
     nl_cb_put(nl->cb1);
     nl_cb_put(nl->cb2);
-    nl_cb_put(nl->cb3);
+    //nl_cb_put(nl->cb3);
     nl_close(nl->socket);
     nl_socket_free(nl->socket);
 }
@@ -213,6 +218,8 @@ int dump_callback(struct nl_msg* msg, void* arg)
     char mac_addr[20];
     struct nlattr *tb[NL80211_ATTR_MAX + 1];
 
+    Signals signal;
+
     nla_parse(tb, NL80211_ATTR_MAX, genlmsg_attrdata(gnlh, 0), genlmsg_attrlen(gnlh, 0), NULL);
     
     if (!tb[NL80211_ATTR_BSS]) 
@@ -238,12 +245,17 @@ int dump_callback(struct nl_msg* msg, void* arg)
     }
 
     mac_addr_n2a(mac_addr, (unsigned char*)nla_data(bss[NL80211_BSS_BSSID]));
-    printf("%s, ", mac_addr);
-    printf("%d MHz, ", nla_get_u32(bss[NL80211_BSS_FREQUENCY]));
-    printf("-%d dBm, ", 100+(int)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100);
-    print_ssid((unsigned char*)nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]));
-    printf("\n");
+    //printf("%s, ", mac_addr);
+    //printf("%d MHz, ", nla_get_u32(bss[NL80211_BSS_FREQUENCY]));
+    //printf("-%d dBm, ", 100+(int)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100);
+    //printf("%s", print_ssid((unsigned char*)nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS])));
 
+    signal.signalStrength = 100+(int)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100;
+    signal.name = print_ssid((unsigned char*)nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]));
+
+    ((std::vector<Signals>*)arg)->push_back(signal);
+
+    //printf("\n");
     return NL_SKIP;
 }
 
@@ -401,10 +413,12 @@ void mac_addr_n2a(char *mac_addr, unsigned char *arg)
     }
 }
 
-void print_ssid(unsigned char *ie, int ielen) 
+uint8_t* print_ssid(unsigned char *ie, int ielen)
 {
     uint8_t len;
     uint8_t *data;
+    uint8_t *save_data = new uint8_t[30]();
+
     int i;
 
     while (ielen >= 2 && ielen >= ie[1]) {
@@ -412,15 +426,30 @@ void print_ssid(unsigned char *ie, int ielen)
             len = ie[1];
             data = ie + 2;
             for (i = 0; i < len; i++) {
-                if (isprint(data[i]) && data[i] != ' ' && data[i] != '\\') printf("%c", data[i]);
-                else if (data[i] == ' ' && (i != 0 && i != len -1)) printf(" ");
-                else printf("\\x%.2x", data[i]);
+                if (isprint(data[i]) && data[i] != ' ' && data[i] != '\\')
+                {
+                    //printf("%c", data[i]);
+                    save_data[i] = data[i];
+                }
+                else if (data[i] == ' ' && (i != 0 && i != len -1))
+                {
+                    //printf(" ");
+                    save_data[i] = ' ';
+
+                }
+                else
+                {
+
+                    save_data[i] = '\x0' + data[i];
+
+                }
             }
             break;
         }
         ielen -= ie[1] + 2;
         ie += ie[1] + 2;
     }
+    return save_data;
 }
 
 int nl_get_multicast_id(struct nl_sock *sock, const char *family, const char *group) 
@@ -467,7 +496,7 @@ int nl_get_multicast_id(struct nl_sock *sock, const char *family, const char *gr
             return ret;
 }
 
-int do_scan_trigger(Netlink* nl, Wifi* w)
+int do_scan_trigger(Netlink* nl, Wifi* w, std::vector<Signals>* sig)
 {
     struct nl_msg* msg;
     struct trigger_results results = { .done=0, .aborted=0 };
@@ -498,8 +527,6 @@ int do_scan_trigger(Netlink* nl, Wifi* w)
     if(!nl->cb3)
     {
         fprintf(stderr, "Failed to allocate netlink callbacks.\n");
-        nlmsg_free(msg);
-        nlmsg_free(ssids_to_scan);
         return -ENOMEM;
     }
 
@@ -560,7 +587,7 @@ int do_scan_trigger(Netlink* nl, Wifi* w)
 
     genlmsg_put(msg, 0, 0, nl->id, 0, NLM_F_DUMP, NL80211_CMD_GET_SCAN, 0);  // Add header
     nla_put_u32(msg, NL80211_ATTR_IFINDEX, w->ifindex); // Add attribute to message -> it can be delete maybe
-    nl_socket_modify_cb(nl->socket, NL_CB_VALID, NL_CB_CUSTOM, dump_callback, NULL);
+    nl_socket_modify_cb(nl->socket, NL_CB_VALID, NL_CB_CUSTOM, dump_callback, sig);
 
     ret = nl_send_auto(nl->socket, msg);  // Send message
 
@@ -571,7 +598,7 @@ int do_scan_trigger(Netlink* nl, Wifi* w)
     if (ret < 0) {
         printf("ERROR: nl_recvmsgs_default() returned %d (%s).\n", ret, nl_geterror(-ret));
         return ret;
-    } 
+    }
 
     nlmsg_free(msg);
     nl_cb_put(nl->cb3);

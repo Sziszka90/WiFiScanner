@@ -16,32 +16,35 @@
 #include <iostream>
 #include <QApplication>
 #include <thread>
+#include <vector>
 
 using namespace std;
 
 std::atomic_int runApp(1);
 
-void runScanner(WifiScanner* wifiScanner, Netlink* nl, Wifi* w)
+int runScanner(WifiScanner* wifiScanner, Netlink* nl, Wifi* w)
 {
+
     do
     {
-        wifiScanner->getWifiStatus(nl, w);
-        cout<<"Interface: "
-            << w->ifname
-            << " | InterfaceIdx: "
-            << w->ifindex
-            << " signal: "
-            << w->signal
-            << " dBm | txrate: "
-            << (float)w->txrate/10
-            << " MBit/s"
-            <<endl;
+        std::vector<Signals>* sig = new std::vector<Signals>();
 
-        sleep(5);
+        wifiScanner->getWifiStatus(nl, w);
+
+        int err = wifiScanner->doScanTrigger(nl, w, sig);
+        if (err != 0) {
+            cout<<"do_scan_trigger() failed with"<< err <<endl;
+            return err;
+        }
+
+        for( int i = 0; i < sig->size(); ++i)
+            cout<<(*sig)[i].name<<endl;
+
+        sleep(4);
     }
     while(runApp);
 
-    return;
+    return 0;
 }
 
 int main(int argc, char **argv)
@@ -52,20 +55,13 @@ int main(int argc, char **argv)
 
     WifiScanner* wifiScanner = new WifiScanner();
 
+
     nl.id = wifiScanner->initNl80211(&nl, &w);
 
     if (nl.id < 0)
     {
         fprintf(stderr, "Error initializing netlink 802.11\n");
         return -1;
-    }
-
-    wifiScanner->getWifiStatus(&nl, &w);
-
-    int err = wifiScanner->doScanTrigger(&nl, &w);
-    if (err != 0) {
-        cout<<"do_scan_trigger() failed with"<< err <<endl;
-        return err;
     }
 
     std::thread thread1(runScanner, wifiScanner, &nl, &w);
@@ -80,10 +76,13 @@ int main(int argc, char **argv)
 
     cout<<"Thread joined"<<endl;
 
+
     cout<<"\nExiting gracefully... "<<endl;
     wifiScanner->deleteNetlink(&nl);
     cout<<"OK"<<endl;
     return 0;
+
+
 
 
 }

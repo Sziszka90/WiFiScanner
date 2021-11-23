@@ -1,6 +1,9 @@
 #ifndef __WIFI_LIB_H__
 #define __WIFI_LIB_H__
 
+#include <vector>
+#include <cstdint>
+
 struct trigger_results {
     int done;
     int aborted;
@@ -27,15 +30,20 @@ typedef struct {
 
 } Wifi;
 
+typedef struct {
+    uint8_t *name;
+    int signalStrength;
+} Signals;
+
 int init_nl80211(Netlink *nl, Wifi *w);
 
 int get_wifi_status(Netlink *nl, Wifi *w);
 
 void mac_addr_n2a(char *mac_addr, unsigned char *arg);
 
-void print_ssid(unsigned char *ie, int ielen);
+uint8_t* print_ssid(unsigned char *ie, int ielen);
 
-int do_scan_trigger(Netlink* nl, Wifi* w);
+int do_scan_trigger(Netlink* nl, Wifi* w, std::vector<Signals>* sig);
 
 int finish_callback(struct nl_msg *msg, void *arg);
 
