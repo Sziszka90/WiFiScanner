@@ -1,14 +1,4 @@
-#include <errno.h>
-#include <netlink/netlink.h>
-#include <netlink/genl/genl.h>
-#include <netlink/genl/family.h>
-#include <netlink/genl/ctrl.h>
-#include <linux/nl80211.h>
-#include <ctype.h>
 #include "wifi_lib.h"
-#include <iostream>
-#include <vector>
-#include <string>
 
 using namespace std;
 
@@ -58,7 +48,6 @@ void delete_netlink( Netlink* nl)
 {
     nl_cb_put(nl->cb1);
     nl_cb_put(nl->cb2);
-    //nl_cb_put(nl->cb3);
     nl_close(nl->socket);
     nl_socket_free(nl->socket);
 }
@@ -488,12 +477,11 @@ int nl_get_multicast_id(struct nl_sock *sock, const char *family, const char *gr
 
     if (ret == 0) ret = grp.id;
 
-    nla_put_failure:
-        out:
-            nl_cb_put(cb);
-        out_fail_cb:
-            nlmsg_free(msg);
-            return ret;
+    out:
+        nl_cb_put(cb);
+    out_fail_cb:
+        nlmsg_free(msg);
+        return ret;
 }
 
 int do_scan_trigger(Netlink* nl, Wifi* w, std::vector<Signals>* sig)

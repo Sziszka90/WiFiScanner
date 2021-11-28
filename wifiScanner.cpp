@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <netlink/netlink.h>
-#include <netlink/genl/genl.h>
-#include <netlink/genl/family.h>
-#include <netlink/genl/ctrl.h>
-#include <linux/nl80211.h>
+
 #include "wifi_lib.h"
 #include "wifiScanner.h"
 #include <vector>

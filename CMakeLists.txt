@@ -12,21 +12,10 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 
-# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
-# Check https://doc.qt.io/qt/deployment-android.html for more information.
-# They need to be set before the find_package( ...) calls below.
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Charts Gui REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Charts Gui REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS  Charts REQUIRED)
 
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
-
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 message("Searching for Linux netlink library")
 
@@ -82,6 +71,7 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -101,4 +91,7 @@ else()
 endif()
 
 target_link_libraries(WifiScannerApp PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(WifiScannerApp PRIVATE Qt${QT_VERSION_MAJOR}::Charts)
+target_link_libraries(WifiScannerApp PRIVATE Qt${QT_VERSION_MAJOR}::Gui)
+
 target_link_libraries(WifiScannerApp PRIVATE ${LibNL_INCLUDE_DIR} -lnl-genl-3 -lnl-3)

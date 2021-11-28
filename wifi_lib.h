@@ -1,8 +1,18 @@
-#ifndef __WIFI_LIB_H__
-#define __WIFI_LIB_H__
+#ifndef WIFI_LIB_H
+#define WIFI_LIB_H
 
+#include <netlink/netlink.h>
+#include <netlink/genl/genl.h>
+#include <netlink/genl/family.h>
+#include <netlink/genl/ctrl.h>
+#include <linux/nl80211.h>
+
+#include <ctype.h>
+#include <iostream>
+#include <string>
 #include <vector>
 #include <cstdint>
+#include <errno.h>
 
 struct trigger_results {
     int done;

@@ -6,8 +6,16 @@
 #include <netlink/genl/family.h>
 #include <netlink/genl/ctrl.h>
 #include <linux/nl80211.h>
+
 #include "wifi_lib.h"
+
 #include <vector>
+#include <stdio.h>
+#include <signal.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
 
 class WifiScanner {
 public:

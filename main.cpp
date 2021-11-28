@@ -1,45 +1,44 @@
 #include "mainwindow.h"
-#include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <netlink/netlink.h>
-#include <netlink/genl/genl.h>
-#include <netlink/genl/family.h>
-#include <netlink/genl/ctrl.h>
-#include <linux/nl80211.h>
 #include "wifi_lib.h"
 #include "wifiScanner.h"
+
+#include<QApplication>
+
 #include <memory>
 #include <iostream>
-#include <QApplication>
 #include <thread>
 #include <vector>
+#include <mutex>
 
 using namespace std;
 
+std::mutex mtx;
+
 std::atomic_int runApp(1);
 
-int runScanner(WifiScanner* wifiScanner, Netlink* nl, Wifi* w)
+int runScanner(WifiScanner* wifiScanner, Netlink* nl, Wifi* w, std::vector<Signals>* sig)
 {
+    std::vector<Signals>* signal = new std::vector<Signals>();
 
     do
     {
-        std::vector<Signals>* sig = new std::vector<Signals>();
+        signal->clear();
 
         wifiScanner->getWifiStatus(nl, w);
 
-        int err = wifiScanner->doScanTrigger(nl, w, sig);
+        int err = wifiScanner->doScanTrigger(nl, w, signal);
         if (err != 0) {
             cout<<"do_scan_trigger() failed with"<< err <<endl;
             return err;
         }
 
-        for( int i = 0; i < sig->size(); ++i)
-            cout<<(*sig)[i].name<<endl;
+        mtx.lock();
 
+
+        std::sort (signal->begin(), signal->end(), ([](Signals sig1, Signals sig2) { return sig1.signalStrength > sig2.signalStrength; }));
+        *sig = *signal;
+
+        mtx.unlock();
         sleep(4);
     }
     while(runApp);
@@ -55,27 +54,28 @@ int main(int argc, char **argv)
 
     WifiScanner* wifiScanner = new WifiScanner();
 
+    std::vector<Signals> sig;
 
     nl.id = wifiScanner->initNl80211(&nl, &w);
 
     if (nl.id < 0)
     {
-        fprintf(stderr, "Error initializing netlink 802.11\n");
+        cout<<"Error initializing netlink 802.11\n"<<endl;
         return -1;
     }
 
-    std::thread thread1(runScanner, wifiScanner, &nl, &w);
+    std::thread threadScanner(runScanner, wifiScanner, &nl, &w, &sig);
 
     QApplication a(argc, argv);
-    MainWindow* win = new MainWindow();
-    win->show();
+    MainWindow window;
+    window.setSignals(&sig);
+    window.show();
 
     runApp = a.exec();
 
-    thread1.join();
+    threadScanner.join();
 
     cout<<"Thread joined"<<endl;
-
 
     cout<<"\nExiting gracefully... "<<endl;
     wifiScanner->deleteNetlink(&nl);
