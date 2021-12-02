@@ -4,14 +4,11 @@
 #include <QMainWindow>
 #include <QTimer>
 
-#include <QtCharts/QChartView>
-#include <QtCharts/QBarSeries>
-#include <QtCharts/QBarSet>
-#include <QtCharts/QLegend>
-#include <QtCharts/QBarCategoryAxis>
-#include <QPushButton>
 
+#include <QPushButton>
+#include <QVBoxLayout>
 #include "wifi_lib.h"
+#include "wifiScanner.h"
 
 #include <string>
 
@@ -26,22 +23,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
-    void setSignals(std::vector<Signals>* signal);
 private:
-    std::vector<Signals>* sig;
     Ui::MainWindow *ui;
-    QtCharts::QBarSet* set;
-    QtCharts::QBarSeries *series;
-    QtCharts::QChart *chart;
-    QStringList categories;
-    QtCharts::QChartView *chartView;
-    QtCharts::QBarCategoryAxis *axis;
     QPushButton *button;
-    int checkMaxSignals(std::vector<Signals>* sig);
-    void createChart();
 private slots:
-    void updateChart();
-
 };
 #endif // MAINWINDOW_H

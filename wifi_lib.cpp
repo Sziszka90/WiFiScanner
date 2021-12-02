@@ -240,7 +240,11 @@ int dump_callback(struct nl_msg* msg, void* arg)
     //printf("%s", print_ssid((unsigned char*)nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS])));
 
     signal.signalStrength = 100+(int)nla_get_u32(bss[NL80211_BSS_SIGNAL_MBM]) / 100;
-    signal.name = print_ssid((unsigned char*)nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]));
+    uint8_t* nameWifi = print_ssid((unsigned char*)nla_data(bss[NL80211_BSS_INFORMATION_ELEMENTS]), nla_len(bss[NL80211_BSS_INFORMATION_ELEMENTS]));
+
+    std::string str((char*)(nameWifi));
+
+    signal.name = str + ' ' + "(ID:" + std::to_string(((std::vector<Signals>*)arg)->size()) + ")";
 
     ((std::vector<Signals>*)arg)->push_back(signal);
 

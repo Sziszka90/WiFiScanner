@@ -13,6 +13,7 @@
 #include <vector>
 #include <cstdint>
 #include <errno.h>
+#include <algorithm>
 
 struct trigger_results {
     int done;
@@ -41,7 +42,7 @@ typedef struct {
 } Wifi;
 
 typedef struct {
-    uint8_t *name;
+    std::string name;
     int signalStrength;
 } Signals;
 
