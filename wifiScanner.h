@@ -19,14 +19,13 @@
 
 class WifiScanner {
 public:
-    Netlink nl;
-    Wifi w;
-
     int getWifiStatus(Netlink* nl, Wifi* w);
     int initNl80211(Netlink* nl, Wifi* w);
     void deleteNetlink(Netlink *nl);
     int doScanTrigger(Netlink* nl, Wifi* w, std::vector<Signals>* sig);
-
+private:
+    Netlink nl;
+    Wifi w;
 };
 
 #endif

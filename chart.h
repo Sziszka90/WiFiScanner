@@ -19,6 +19,12 @@ class Chart : public QWidget
     Q_OBJECT
 public:
     explicit Chart(QWidget *parent = nullptr);
+private:
+    std::vector<Signals>* sig;
+    Netlink* netlink;
+    Wifi* wifi;
+    WifiScanner* wifiscanner;
+
     QtCharts::QBarSet* set;
     QtCharts::QBarSeries *series;
     QtCharts::QChart *chart;
@@ -29,17 +35,15 @@ public:
     QtCharts::QBarCategoryAxis *axisY;
     QPushButton* button;
     QGridLayout* mainLayout;
-private:
-    std::vector<Signals>* sig;
-    Netlink* netlink;
-    Wifi* wifi;
-    WifiScanner* wifiscanner;
+
+    bool chartCreated;
 
     int checkMaxSignals(std::vector<Signals>* sig);
-    void createChart();
+    void updateChart();
+    void resetChart();  
+    void waiting();
     int doScanning();
-    void resetChart();
-    bool chartCreated;
+    void createChart();
 signals:
 
 };

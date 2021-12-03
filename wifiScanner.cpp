@@ -1,7 +1,5 @@
-
 #include "wifi_lib.h"
 #include "wifiScanner.h"
-#include <vector>
 
 int WifiScanner::doScanTrigger(Netlink* nl, Wifi* w, std::vector<Signals>* sig)
 {

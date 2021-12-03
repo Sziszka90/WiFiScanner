@@ -1,7 +1,5 @@
 #include "wifi_lib.h"
 
-using namespace std;
-
 struct nla_policy stats_policy[NL80211_STA_INFO_MAX + 1] = 
 {
     {},

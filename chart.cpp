@@ -21,40 +21,69 @@ Chart::Chart(QWidget *parent) : QWidget(parent)
     button = new QPushButton("Scan", this);
 
     button->setGeometry(QRect(QPoint(300, 20), QSize(200, 50)));
-    connect(button,&QPushButton::clicked,this, &Chart::doScanning);
+    connect(button,&QPushButton::clicked,this, &Chart::updateChart);
 
     chartCreated = false;
-    std::cout<<"CREATED"<<std::endl;
 }
 
-int Chart::doScanning()
+void Chart::updateChart()
 {
     if(chartCreated)
     {
         resetChart();
     }
 
+    sig->clear();
+
+    doScanning();
+
+    createChart();
+
+    chartCreated = true;
+}
+
+void Chart::resetChart()
+{
+    delete set;
+
+    set = new QtCharts::QBarSet("Signal Strength");
+    chart->removeAllSeries();
+    chart->removeAxis(axisX);
+    chart->removeAxis(axisY);
+    series = new QtCharts::QBarSeries();
+
+    axisY->clear();
+
+    categoriesY.clear();
+}
+
+int Chart::doScanning()
+{
     netlink->id = wifiscanner->initNl80211(netlink, wifi);
+
+    wifiscanner->getWifiStatus(netlink, wifi);
 
     if (netlink->id < 0)
     {
         std::cout<<"Error initializing netlink 802.11\n"<<std::endl;
+        wifiscanner->deleteNetlink(netlink);
         return -1;
     }
-
-    sig->clear();
-
-    wifiscanner->getWifiStatus(netlink, wifi);
 
     int err = wifiscanner->doScanTrigger(netlink, wifi, sig);
     if (err != 0) {
         std::cout<<"do_scan_trigger() failed with"<< err <<std::endl;
+        wifiscanner->deleteNetlink(netlink);
         return err;
     }
 
-    std::sort (sig->begin(), sig->end(), ([](Signals sig1, Signals sig2) { return sig1.signalStrength > sig2.signalStrength; }));
-
     wifiscanner->deleteNetlink(netlink);
+    return 0;
+}
+
+void Chart::createChart()
+{
+    std::sort (sig->begin(), sig->end(), ([](Signals sig1, Signals sig2) { return sig1.signalStrength > sig2.signalStrength; }));
 
     for(int i=0; i<checkMaxSignals(sig);++i)
     {
@@ -74,12 +103,6 @@ int Chart::doScanning()
         categoriesY << qstr;
     }
 
-    for(int i = 0; i<checkMaxSignals(sig);++i)
-    {
-        std::cout<<(*sig)[i].name<<std::endl;
-        std::cout<<(*sig)[i].signalStrength<<std::endl;
-    }
-
     axisX->setRange(0,80.0);
     axisY->append(categoriesY);
     axisY->setLabelsAngle(90);
@@ -97,30 +120,6 @@ int Chart::doScanning()
 
     mainLayout->addWidget(button, 2, 1);
     setLayout(mainLayout);
-
-    chartCreated = true;
-
-    return 0;
-}
-
-void Chart::resetChart()
-{
-    delete set;
-    delete wifi;
-    delete netlink;
-
-    set = new QtCharts::QBarSet("Signal Strength");
-    chart->removeAllSeries();
-    chart->removeAxis(axisX);
-    chart->removeAxis(axisY);
-    series = new QtCharts::QBarSeries();
-
-    axisY->clear();
-
-    wifi = new Wifi;
-    netlink = new Netlink;
-
-    categoriesY.clear();
 
 }
 

@@ -5,12 +5,6 @@
 
 #include<QApplication>
 
-#include <memory>
-#include <iostream>
-#include <vector>
-
-using namespace std;
-
 int main(int argc, char **argv)
 {
 
@@ -19,11 +13,11 @@ int main(int argc, char **argv)
 
     window.show();
 
-    return a.exec();
+    int returnValue = a.exec();
 
-    cout<<"\nExiting gracefully... "<<endl;
+    std::cout<<"\nExiting gracefully... "<<std::endl;
 
-    cout<<"OK"<<endl;
-    return 0;
+    std::cout<<"OK"<<std::endl;
+    return returnValue;
 
 }

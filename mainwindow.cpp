@@ -17,7 +17,6 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(chart);
 
     resize(800, 90);
-
 }
 
 MainWindow::~MainWindow()

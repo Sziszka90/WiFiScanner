@@ -3,10 +3,9 @@
 
 #include <QMainWindow>
 #include <QTimer>
-
-
 #include <QPushButton>
 #include <QVBoxLayout>
+
 #include "wifi_lib.h"
 #include "wifiScanner.h"
 
